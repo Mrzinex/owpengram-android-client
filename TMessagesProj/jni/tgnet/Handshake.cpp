@@ -416,23 +416,23 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
                     serverPublicKeysFingerprints.push_back(cm.customPublicKeyFingerprint);
                 } else if (cm.testBackend) {
                     serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
-                                                  "MIIBCgKCAQEAyMEdY1aR+sCR3ZSJrtztKTKqigvO/vBfqACJLZtS7QMgCGXJ6XIR\n"
-                                                  "yy7mx66W0/sOFa7/1mAZtEoIokDP3ShoqF4fVNb6XeqgQfaUHd8wJpDWHcR2OFwv\n"
-                                                  "plUUI1PLTktZ9uW2WE23b+ixNwJjJGwBDJPQEQFBE+vfmH0JP503wr5INS1poWg/\n"
-                                                  "j25sIWeYPHYeOrFp/eXaqhISP6G+q2IeTaWTXpwZj4LzXq5YOpk4bYEQ6mvRq7D1\n"
-                                                  "aHWfYmlEGepfaYR8Q0YqvvhYtMte3ITnuSJs171+GDqpdKcSwHnd6FudwGO4pcCO\n"
-                                                  "j4WcDuXc2CTHgH8gFTNhp/Y8/SpDOhvn9QIDAQAB\n"
-                                                  "-----END RSA PUBLIC KEY-----");
+"MIIBCgKCAQEAxKcvxMR1ubQTbB0Zdwg6VZ4Hg13iv1hZ7+wt5HHO9jcG0Zxr7UIo\n"
+"u0dmt9+9wceMv3cdk0ooxGtQwSkVeGMPjSe+XuSshuDQjN8GsUcZ8ZIpntify4Hm\n"
+"38njLny38ktrd1xJHKtzswRHS7f7oYqWzU0CYiGRzjKiRXSHArdAoNDnab+6XTPI\n"
+"0rVOMYiKJ0a5SV/8gOHBdRypBmzchHmRRUaoZdLA6RRHODlV2Gs7ZwkTBdAcgIgl\n"
+"x4Wr0qDM9cRO9xk7uLxLnWlpPxmSQUWSC6EZagVtlIOCseoFO2KULw/hJzLoKZrC\n"
+"bLmbdcXEFE0rxZB4zrNwPBpS3qFQ1oAC2QIDAQAB\n"
+"-----END RSA PUBLIC KEY-----");
                     serverPublicKeysFingerprints.push_back(0xb25898df208d2603);
                 } else {
                     serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
-                                                  "MIIBCgKCAQEAvKLEOWTzt9Hn3/9Kdp/RdHcEhzmd8xXeLSpHIIzaXTLJDw8BhJy1\n"
-                                                  "jR/iqeG8Je5yrtVabqMSkA6ltIpgylH///FojMsX1BHu4EPYOXQgB0qOi6kr08iX\n"
-                                                  "ZIH9/iOPQOWDsL+Lt8gDG0xBy+sPe/2ZHdzKMjX6O9B4sOsxjFrk5qDoWDrioJor\n"
-                                                  "AJ7eFAfPpOBf2w73ohXudSrJE0lbQ8pCWNpMY8cB9i8r+WBitcvouLDAvmtnTX7a\n"
-                                                  "khoDzmKgpJBYliAY4qA73v7u5UIepE8QgV0jCOhxJCPubP8dg+/PlLLVKyxU5Cdi\n"
-                                                  "QtZj2EMy4s9xlNKzX8XezE0MHEa6bQpnFwIDAQAB\n"
-                                                  "-----END RSA PUBLIC KEY-----");
+"MIIBCgKCAQEAxKcvxMR1ubQTbB0Zdwg6VZ4Hg13iv1hZ7+wt5HHO9jcG0Zxr7UIo\n"
+"u0dmt9+9wceMv3cdk0ooxGtQwSkVeGMPjSe+XuSshuDQjN8GsUcZ8ZIpntify4Hm\n"
+"38njLny38ktrd1xJHKtzswRHS7f7oYqWzU0CYiGRzjKiRXSHArdAoNDnab+6XTPI\n"
+"0rVOMYiKJ0a5SV/8gOHBdRypBmzchHmRRUaoZdLA6RRHODlV2Gs7ZwkTBdAcgIgl\n"
+"x4Wr0qDM9cRO9xk7uLxLnWlpPxmSQUWSC6EZagVtlIOCseoFO2KULw/hJzLoKZrC\n"
+"bLmbdcXEFE0rxZB4zrNwPBpS3qFQ1oAC2QIDAQAB\n"
+"-----END RSA PUBLIC KEY-----");
                     serverPublicKeysFingerprints.push_back(0xa9e071c1771060cd);
                 }
             }
