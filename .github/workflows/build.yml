@@ -29,6 +29,22 @@ jobs:
           find . -type f -name "google-services.json" -exec sed -i 's/org.telegram.messenger/com.owpengram.messenger/g' {} +
           find . -type f -name "agconnect-services.json" -exec sed -i 's/org.telegram.messenger/com.owpengram.messenger/g' {} +
 
+      - name: Force Single Architecture (arm64-v8a)
+        run: |
+          cat <<EOF >> TMessagesProj/build.gradle
+          
+          android {
+              splits {
+                  abi {
+                      enable true
+                      reset()
+                      include 'arm64-v8a'
+                      universalApk false
+                  }
+              }
+          }
+          EOF
+
       - name: Generate Dummy Keystore
         run: |
           mkdir -p TMessagesProj/config
@@ -48,4 +64,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Mobugram-APK
-          path: '**/*.apk'
+          path: '**/*arm64-v8a*.apk'
