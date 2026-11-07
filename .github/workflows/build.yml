@@ -13,6 +13,12 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Force Pull Latest Submodule Edits
+        run: |
+          # این دستور گیت‌هاب اکشن را مجبور می‌کند تا تغییرات دستی شما را 
+          # در فایل‌های ConnectionsManager.cpp و Handshake.cpp به زور دانلود و اعمال کند.
+          git submodule update --remote --merge
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -23,28 +29,6 @@ jobs:
         run: |
           find . -type f -name "google-services.json" -exec sed -i 's/org.telegram.messenger/com.owpengram.messenger/g' {} +
           find . -type f -name "agconnect-services.json" -exec sed -i 's/org.telegram.messenger/com.owpengram.messenger/g' {} +
-
-      - name: Inject Custom API 
-        run: |
-          # مقادیر زیر را پاک کن و API ID و HASH سرور خودت را بین کوتیشن‌ها بگذار
-          echo "APP_ID=27838348" >> local.properties
-          echo "APP_HASH=bdf80b7e702af7533bc547075dc59f01" >> local.properties
-
-      - name: Force Single Architecture (arm64-v8a)
-        run: |
-          cat <<EOF >> TMessagesProj/build.gradle
-          
-          android {
-              splits {
-                  abi {
-                      enable true
-                      reset()
-                      include 'arm64-v8a'
-                      universalApk false
-                  }
-              }
-          }
-          EOF
 
       - name: Generate Dummy Keystore
         run: |
