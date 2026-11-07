@@ -24,6 +24,11 @@ jobs:
           echo "APP_ID=${{ secrets.APP_ID }}" >> local.properties
           echo "APP_HASH=${{ secrets.APP_HASH }}" >> local.properties
 
+      - name: Fix JSON Discrepancy
+        run: |
+          find . -type f -name "google-services.json" -exec sed -i 's/org.telegram.messenger/com.owpengram.messenger/g' {} +
+          find . -type f -name "agconnect-services.json" -exec sed -i 's/org.telegram.messenger/com.owpengram.messenger/g' {} +
+
       - name: Generate Dummy Keystore
         run: |
           mkdir -p TMessagesProj/config
