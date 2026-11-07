@@ -19,11 +19,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Inject API Keys
-        run: |
-          echo "APP_ID=${{ secrets.APP_ID }}" >> local.properties
-          echo "APP_HASH=${{ secrets.APP_HASH }}" >> local.properties
-
       - name: Fix JSON Discrepancy
         run: |
           find . -type f -name "google-services.json" -exec sed -i 's/org.telegram.messenger/com.owpengram.messenger/g' {} +
@@ -53,7 +48,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build APK (Afat Release)
+      - name: Build APK (Release)
         env:
           RELEASE_STORE_PASSWORD: android
           RELEASE_KEY_PASSWORD: android
