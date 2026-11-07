@@ -32,15 +32,16 @@ jobs:
       - name: Generate Dummy Keystore
         run: |
           mkdir -p TMessagesProj/config
-          keytool -genkey -v -keystore TMessagesProj/config/release.keystore -alias release -keyalg RSA -keysize 2048 -validity 10000 -storepass release_password -keypass release_password -dname "CN=Mobugram, OU=Dev, O=Mobugram, L=Tehran, S=Tehran, C=IR"
-          echo "RELEASE_STORE_PASSWORD=release_password" >> local.properties
-          echo "RELEASE_KEY_PASSWORD=release_password" >> local.properties
-          echo "RELEASE_KEY_ALIAS=release" >> local.properties
+          keytool -genkey -v -keystore TMessagesProj/config/release.keystore -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Mobugram, OU=Dev, O=Mobugram, L=Tehran, S=Tehran, C=IR"
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Build APK (AfatDebug)
+        env:
+          RELEASE_STORE_PASSWORD: android
+          RELEASE_KEY_PASSWORD: android
+          RELEASE_KEY_ALIAS: androidkey
         run: ./gradlew assembleAfatDebug
 
       - name: Upload APK
