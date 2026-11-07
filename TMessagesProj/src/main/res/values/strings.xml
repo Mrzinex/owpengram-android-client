@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="AppName">OwpenGram</string>
-    <string name="AppNameBeta">OwpenGram Beta</string>
+    <string name="AppName">MobuGram</string>
+    <string name="AppNameBeta">MobuGram Beta</string>
     <string name="LanguageName">English</string>
     <string name="English">English</string>
     <string name="LanguageNameInEnglish">English</string>
