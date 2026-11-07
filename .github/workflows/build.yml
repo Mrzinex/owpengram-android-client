@@ -37,12 +37,12 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build APK (AfatDebug)
+      - name: Build APK (Release)
         env:
           RELEASE_STORE_PASSWORD: android
           RELEASE_KEY_PASSWORD: android
           RELEASE_KEY_ALIAS: androidkey
-        run: ./gradlew assembleAfatDebug
+        run: ./gradlew assembleAfatRelease
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
