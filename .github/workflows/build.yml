@@ -31,22 +31,22 @@ jobs:
 
       - name: Inject Custom API 
         run: |
-          echo "APP_ID=27838348" >> local.properties
-          echo "APP_HASH=bdf80b7e702af7533bc547075dc59f01" >> local.properties
+          echo "APP_ID=${{ secrets.APP_ID }}" >> local.properties
+          echo "APP_HASH=${{ secrets.APP_HASH }}" >> local.properties
 
-      - name: Generate Dummy Keystore
+      - name: Decode Release Keystore
         run: |
           mkdir -p TMessagesProj/config
-          keytool -genkey -v -keystore TMessagesProj/config/release.keystore -alias androidkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Mobugram, OU=Dev, O=Mobugram, L=Tehran, S=Tehran, C=IR"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > TMessagesProj/config/release.keystore
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
       - name: Build APK (Release)
         env:
-          RELEASE_STORE_PASSWORD: android
-          RELEASE_KEY_PASSWORD: android
-          RELEASE_KEY_ALIAS: androidkey
+          RELEASE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: ./gradlew assembleAfatRelease
 
       - name: Upload APK
