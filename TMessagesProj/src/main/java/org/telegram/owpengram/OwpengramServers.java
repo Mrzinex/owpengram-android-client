@@ -58,18 +58,18 @@ public class OwpengramServers {
     private static final String DEFAULT_HOST = "85.133.244.9";
     private static final int    DEFAULT_PORT = 2398;
 
-    // MobuGram's own production server RSA key (Pure PKCS#1 format).
+    // MobuGram's actual production server RSA key from /owpengram/server-info
     static final String OWPENGRAM_RSA_KEY =
         "-----BEGIN RSA PUBLIC KEY-----\n" +
-        "MIIBCgKCAQEArsMVdb0+kF1bPheuyES6jnh7jVud/oYeQ0upQiCsd69j8zwpkUkM\n" +
-        "DQ93gxRkvla/HEGqUKwlSl2MBOQKv8vPexM2xZ6WqkOcyRwrkckY9m1g0EF6f+WM\n" +
-        "BiveGc1jQdZQT6tU9qvsxcU6gyMhbD50pMchxse8BxgaViTcmw2deimm5aj2u4e0\n" +
-        "PuhNKyDYgNAn9lj++8jZdHW0pFh/AkstJJBqWwXNpA8NLYUN1rb56w7n4PNPQ9Se\n" +
-        "vZ3p/c55+PbPQp5HmmDFc2+a/yVGPK/2ZlRhcUY9PYN7qoJXH9evlqxlCujhIVti\n" +
-        "HeHK5QUfHIUBoqJlFIiTGVQwCB05Ap+IlQIDAQAB\n" +
+        "MIIBCgKCAQEA0+uE59V2fbKiciXl1/ALQJKzkTUtHnQf+y7hWYFjjysHj6unqFdQ\n" +
+        "Dld2HI6C64WpXO5U0bDGJfGbFhN7ak0W6c0hGhZPZqtXw7lL8XHqSKUVMkCRwJaX\n" +
+        "VQGMRCREd1cJ7nDTgDs6K1RGIDP1Isi5T0Tkq90UyYIMqHolUxp5++QhrF8qim2e\n" +
+        "Vzkha1TUAlweNOfBc4GUiH32mW5ge7e/iKYGwkvM36HHkV72V8bLnenJwrKeJDc3\n" +
+        "2oVjhBRW2PQdArAayNN4L4guBodSNIBoUOUksDfHAz1Kr2bQR+Z+4OJhU7vqaMqo\n" +
+        "KotBiCB4W5lexzrWSEvHLfAeufbbSyCIGQIDAQAB\n" +
         "-----END RSA PUBLIC KEY-----";
-    // Exact 64-bit fingerprint (-4304700782561996507L == 0xc442a1720f0bd125L)
-    static final long OWPENGRAM_RSA_FINGERPRINT = 0xc442a1720f0bd125L;
+    // Exact 64-bit fingerprint for the key above (0x75996030ec97ec01L)
+    static final long OWPENGRAM_RSA_FINGERPRINT = 0x75996030ec97ec01L;
 
     // Official Telegram production RSA key (restored from original Android source)
     static final String TELEGRAM_RSA_KEY =
@@ -95,7 +95,7 @@ public class OwpengramServers {
         s.isOfficial         = true;
         s.isTelegram         = false;
         s.multiDc            = false;
-        s.mainDcId           = 1;
+        s.mainDcId           = 2;
         s.rsaPublicKey       = OWPENGRAM_RSA_KEY;
         s.rsaKeyFingerprint  = OWPENGRAM_RSA_FINGERPRINT;
         s.logoPath           = ensureBundledLogo();
@@ -317,7 +317,7 @@ public class OwpengramServers {
         }
         int mainDc = server.mainDcId > 0
                 ? server.mainDcId
-                : (server.isTelegram ? 2 : 1);
+                : (server.isTelegram ? 2 : 2);
         ConnectionsManager.native_applyServerConfig(
                 accountNum,
                 server.host,
