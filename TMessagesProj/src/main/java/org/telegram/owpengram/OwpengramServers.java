@@ -45,13 +45,6 @@ public class OwpengramServers {
     /** Public repository of the OwpenGram server, opened from the settings entry. */
     public static final String SERVER_REPO_URL = "https://dl.mobutu.ir";
 
-    // Fired whenever the stored custom-server list changes (add/update/remove,
-    // from ANY code path -- including one triggered from outside the
-    // currently-visible UI, e.g. an owpg://addserver link opened while
-    // ServerSelectFragment already happens to be showing). Any UI presenting
-    // that list should register here instead of only refreshing from its own
-    // local "just saved" callback, or it goes stale until the user leaves the
-    // fragment and comes back. Always delivered on the UI thread.
     private static final CopyOnWriteArrayList<Runnable> customServersChangedListeners = new CopyOnWriteArrayList<>();
 
     public static void addCustomServersChangedListener(Runnable listener) {
@@ -65,19 +58,18 @@ public class OwpengramServers {
     private static final String DEFAULT_HOST = "85.133.244.9";
     private static final int    DEFAULT_PORT = 2398;
 
-    // OwpenGram's own production server RSA key.
+    // MobuGram's own production server RSA key (Pure PKCS#1 format).
     static final String OWPENGRAM_RSA_KEY =
         "-----BEGIN RSA PUBLIC KEY-----\n" +
-        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArsMVdb0+kF1bPheuyES6\n" +
-        "jnh7jVud/oYeQ0upQiCsd69j8zwpkUkMDQ93gxRkvla/HEGqUKwlSl2MBOQKv8vP\n" +
-        "exM2xZ6WqkOcyRwrkckY9m1g0EF6f+WMBiveGc1jQdZQT6tU9qvsxcU6gyMhbD50\n" +
-        "pMchxse8BxgaViTcmw2deimm5aj2u4e0PuhNKyDYgNAn9lj++8jZdHW0pFh/Akst\n" +
-        "JJBqWwXNpA8NLYUN1rb56w7n4PNPQ9SevZ3p/c55+PbPQp5HmmDFc2+a/yVGPK/2\n" +
-        "ZlRhcUY9PYN7qoJXH9evlqxlCujhIVtiHeHK5QUfHIUBoqJlFIiTGVQwCB05Ap+I\n" +
-        "lQIDAQAB\n" +
+        "MIIBCgKCAQEArsMVdb0+kF1bPheuyES6jnh7jVud/oYeQ0upQiCsd69j8zwpkUkM\n" +
+        "DQ93gxRkvla/HEGqUKwlSl2MBOQKv8vPexM2xZ6WqkOcyRwrkckY9m1g0EF6f+WM\n" +
+        "BiveGc1jQdZQT6tU9qvsxcU6gyMhbD50pMchxse8BxgaViTcmw2deimm5aj2u4e0\n" +
+        "PuhNKyDYgNAn9lj++8jZdHW0pFh/AkstJJBqWwXNpA8NLYUN1rb56w7n4PNPQ9Se\n" +
+        "vZ3p/c55+PbPQp5HmmDFc2+a/yVGPK/2ZlRhcUY9PYN7qoJXH9evlqxlCujhIVti\n" +
+        "HeHK5QUfHIUBoqJlFIiTGVQwCB05Ap+IlQIDAQAB\n" +
         "-----END RSA PUBLIC KEY-----";
-    // fingerprint == 0 -> native layer derives it from the PEM (see ConnectionsManager::applyServerConfig).
-    static final long OWPENGRAM_RSA_FINGERPRINT = 0;
+    // Exact 64-bit fingerprint (-4304700782561996507L == 0xc442a1720f0bd125L)
+    static final long OWPENGRAM_RSA_FINGERPRINT = 0xc442a1720f0bd125L;
 
     // Official Telegram production RSA key (restored from original Android source)
     static final String TELEGRAM_RSA_KEY =
@@ -107,21 +99,10 @@ public class OwpengramServers {
         s.rsaPublicKey       = OWPENGRAM_RSA_KEY;
         s.rsaKeyFingerprint  = OWPENGRAM_RSA_FINGERPRINT;
         s.logoPath           = ensureBundledLogo();
-        // Whatever the operator has since set on the server itself wins over
-        // the shipped defaults -- see refreshServersInfo(). Only name,
-        // description and logo: host/port/key above stay compiled-in.
         applyBuiltinIdentity(s);
         return s;
     }
 
-    /**
-     * Copies the app's own bundled server logo (res/drawable .../mobu_server_logo.png)
-     * to a stable file under the app's files dir, once, and returns that path for
-     * OwpengramServer.logoPath. No network request involved -- the icon ships inside
-     * the APK, so it is always available even offline. If applyBuiltinIdentity() later
-     * overlays a fetched or user-edited logo on top of this server, that wins instead;
-     * this is only the fallback used until/ unless that happens.
-     */
     private static String ensureBundledLogo() {
         File dir = new File(ApplicationLoader.applicationContext.getFilesDir(), SERVER_LOGOS_DIR);
         File file = new File(dir, "mobu_bundled_logo.png");
@@ -329,7 +310,7 @@ public class OwpengramServers {
             fingerprint = TELEGRAM_RSA_FINGERPRINT;
         } else if (server.rsaPublicKey != null && !server.rsaPublicKey.isEmpty()) {
             key = server.rsaPublicKey;
-            fingerprint = (server.rsaKeyFingerprint != 0) ? server.rsaKeyFingerprint : 0;
+            fingerprint = (server.rsaKeyFingerprint != 0) ? server.rsaKeyFingerprint : OWPENGRAM_RSA_FINGERPRINT;
         } else {
             key = OWPENGRAM_RSA_KEY;
             fingerprint = OWPENGRAM_RSA_FINGERPRINT;
