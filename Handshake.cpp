@@ -405,36 +405,21 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
             }
         } else {
             {
-                // Always reload from the instance-specific key.
-                // thread_local serverPublicKeys is shared across all accounts on the network thread,
-                // so caching it causes account A's key to be used for account B's handshake.
+                // Always use our custom PKCS#1 server public key directly
                 serverPublicKeys.clear();
                 serverPublicKeysFingerprints.clear();
-                auto &cm = ConnectionsManager::getInstance(currentDatacenter->instanceNum);
-                if (!cm.customPublicKey.empty() && cm.customPublicKeyFingerprint != 0) {
-                    serverPublicKeys.push_back(cm.customPublicKey);
-                    serverPublicKeysFingerprints.push_back(cm.customPublicKeyFingerprint);
-                } else if (cm.testBackend) {
-                    serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
-"MIIBCgKCAQEAxKcvxMR1ubQTbB0Zdwg6VZ4Hg13iv1hZ7+wt5HHO9jcG0Zxr7UIo\n"
-"u0dmt9+9wceMv3cdk0ooxGtQwSkVeGMPjSe+XuSshuDQjN8GsUcZ8ZIpntify4Hm\n"
-"38njLny38ktrd1xJHKtzswRHS7f7oYqWzU0CYiGRzjKiRXSHArdAoNDnab+6XTPI\n"
-"0rVOMYiKJ0a5SV/8gOHBdRypBmzchHmRRUaoZdLA6RRHODlV2Gs7ZwkTBdAcgIgl\n"
-"x4Wr0qDM9cRO9xk7uLxLnWlpPxmSQUWSC6EZagVtlIOCseoFO2KULw/hJzLoKZrC\n"
-"bLmbdcXEFE0rxZB4zrNwPBpS3qFQ1oAC2QIDAQAB\n"
-"-----END RSA PUBLIC KEY-----");
-                    serverPublicKeysFingerprints.push_back(0xb25898df208d2603);
-                } else {
-                    serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
-"MIIBCgKCAQEAxKcvxMR1ubQTbB0Zdwg6VZ4Hg13iv1hZ7+wt5HHO9jcG0Zxr7UIo\n"
-"u0dmt9+9wceMv3cdk0ooxGtQwSkVeGMPjSe+XuSshuDQjN8GsUcZ8ZIpntify4Hm\n"
-"38njLny38ktrd1xJHKtzswRHS7f7oYqWzU0CYiGRzjKiRXSHArdAoNDnab+6XTPI\n"
-"0rVOMYiKJ0a5SV/8gOHBdRypBmzchHmRRUaoZdLA6RRHODlV2Gs7ZwkTBdAcgIgl\n"
-"x4Wr0qDM9cRO9xk7uLxLnWlpPxmSQUWSC6EZagVtlIOCseoFO2KULw/hJzLoKZrC\n"
-"bLmbdcXEFE0rxZB4zrNwPBpS3qFQ1oAC2QIDAQAB\n"
-"-----END RSA PUBLIC KEY-----");
-                    serverPublicKeysFingerprints.push_back(0xa9e071c1771060cd);
-                }
+
+                serverPublicKeys.emplace_back(
+                    "-----BEGIN RSA PUBLIC KEY-----\n"
+                    "MIIBCgKCAQEArsMVdb0+kF1bPheuyES6jnh7jVud/oYeQ0upQiCsd69j8zwpkUkM\n"
+                    "DQ93gxRkvla/HEGqUKwlSl2MBOQKv8vPexM2xZ6WqkOcyRwrkckY9m1g0EF6f+WM\n"
+                    "BiveGc1jQdZQT6tU9qvsxcU6gyMhbD50pMchxse8BxgaViTcmw2deimm5aj2u4e0\n"
+                    "PuhNKyDYgNAn9lj++8jZdHW0pFh/AkstJJBqWwXNpA8NLYUN1rb56w7n4PNPQ9Se\n"
+                    "vZ3p/c55+PbPQp5HmmDFc2+a/yVGPK/2ZlRhcUY9PYN7qoJXH9evlqxlCujhIVti\n"
+                    "HeHK5QUfHIUBoqJlFIiTGVQwCB05Ap+IlQIDAQAB\n"
+                    "-----END RSA PUBLIC KEY-----"
+                );
+                serverPublicKeysFingerprints.push_back(0xc442a1720f0bd125ULL);
             }
 
             size_t count2 = serverPublicKeysFingerprints.size();
@@ -566,6 +551,13 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
         BIO_write(keyBio, key.c_str(), (int) key.length());
         RSA *rsaKey = PEM_read_bio_RSAPublicKey(keyBio, nullptr, nullptr, nullptr);
         BIO_free(keyBio);
+
+        if (rsaKey == nullptr) {
+            if (LOGS_ENABLED) DEBUG_E("account%u dc%u handshake: failed to parse RSA key", currentDatacenter->instanceNum, currentDatacenter->datacenterId);
+            innerDataBuffer->reuse();
+            beginHandshake(false);
+            return;
+        }
 
         while (true) {
             RAND_bytes(innerDataBuffer->bytes() + encryptedDataSize + innerDataSize, additionalSize);
@@ -1039,32 +1031,6 @@ void Handshake::loadCdnConfig(Datacenter *datacenter) {
         return;
     }
     if (LOGS_ENABLED) DEBUG_D("account%u dc%u loadCdnConfig", datacenter->instanceNum, datacenter->datacenterId);
-//    if (cdnPublicKeysFingerprints.empty()) {
-//        if (cdnConfig == nullptr) {
-//            cdnConfig = new Config(datacenter->instanceNum, "cdnkeys.dat");
-//        }
-//        NativeByteBuffer *buffer = cdnConfig->readConfig();
-//        if (buffer != nullptr) {
-//            uint32_t version = buffer->readUint32(nullptr);
-//            if (version >= 1) {
-//                size_t count = buffer->readUint32(nullptr);
-//                for (uint32_t a = 0; a < count; a++) {
-//                    int dcId = buffer->readInt32(nullptr);
-//                    cdnPublicKeys[dcId] = buffer->readString(nullptr);
-//                    cdnPublicKeysFingerprints[dcId] = buffer->readUint64(nullptr);
-//                }
-//            }
-//            buffer->reuse();
-//            if (!cdnPublicKeysFingerprints.empty()) {
-//                size_t count = cdnWaitingDatacenters.size();
-//                for (uint32_t a = 0; a < count; a++) {
-//                    cdnWaitingDatacenters[a]->beginHandshake(HandshakeTypeCurrent, false);
-//                }
-//                cdnWaitingDatacenters.clear();
-//                return;
-//            }
-//        }
-//    }
     loadingCdnKeys = true;
     auto request = new TL_help_getCdnConfig();
 
