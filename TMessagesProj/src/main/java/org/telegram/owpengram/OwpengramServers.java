@@ -68,8 +68,8 @@ public class OwpengramServers {
         "2oVjhBRW2PQdArAayNN4L4guBodSNIBoUOUksDfHAz1Kr2bQR+Z+4OJhU7vqaMqo\n" +
         "KotBiCB4W5lexzrWSEvHLfAeufbbSyCIGQIDAQAB\n" +
         "-----END RSA PUBLIC KEY-----";
-    // Exact 64-bit fingerprint for the key above (0x75996030ec97ec01L)
-    static final long OWPENGRAM_RSA_FINGERPRINT = 0x75996030ec97ec01L;
+    // fingerprint == 0 -> native layer derives it automatically from the PEM (0xd57b454c694c66e6L).
+    static final long OWPENGRAM_RSA_FINGERPRINT = 0;
 
     // Official Telegram production RSA key (restored from original Android source)
     static final String TELEGRAM_RSA_KEY =
@@ -310,7 +310,7 @@ public class OwpengramServers {
             fingerprint = TELEGRAM_RSA_FINGERPRINT;
         } else if (server.rsaPublicKey != null && !server.rsaPublicKey.isEmpty()) {
             key = server.rsaPublicKey;
-            fingerprint = (server.rsaKeyFingerprint != 0) ? server.rsaKeyFingerprint : OWPENGRAM_RSA_FINGERPRINT;
+            fingerprint = (server.rsaKeyFingerprint != 0) ? server.rsaKeyFingerprint : 0;
         } else {
             key = OWPENGRAM_RSA_KEY;
             fingerprint = OWPENGRAM_RSA_FINGERPRINT;
