@@ -413,7 +413,7 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
                     serverPublicKeys.push_back(cm.customPublicKey);
                     serverPublicKeysFingerprints.push_back(cm.customPublicKeyFingerprint);
                 } else {
-                    serverPublicKeys.emplace_back(
+                    std::string defaultKey =
                         "-----BEGIN RSA PUBLIC KEY-----\n"
                         "MIIBCgKCAQEA0+uE59V2fbKiciXl1/ALQJKzkTUtHnQf+y7hWYFjjysHj6unqFdQ\n"
                         "Dld2HI6C64WpXO5U0bDGJfGbFhN7ak0W6c0hGhZPZqtXw7lL8XHqSKUVMkCRwJaX\n"
@@ -421,9 +421,9 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
                         "Vzkha1TUAlweNOfBc4GUiH32mW5ge7e/iKYGwkvM36HHkV72V8bLnenJwrKeJDc3\n"
                         "2oVjhBRW2PQdArAayNN4L4guBodSNIBoUOUksDfHAz1Kr2bQR+Z+4OJhU7vqaMqo\n"
                         "KotBiCB4W5lexzrWSEvHLfAeufbbSyCIGQIDAQAB\n"
-                        "-----END RSA PUBLIC KEY-----"
-                    );
-                    serverPublicKeysFingerprints.push_back(0x75996030ec97ec01ULL);
+                        "-----END RSA PUBLIC KEY-----";
+                    serverPublicKeys.push_back(defaultKey);
+                    serverPublicKeysFingerprints.push_back(calculatePublicKeyFingerprint(defaultKey));
                 }
             }
 
@@ -1082,7 +1082,7 @@ void Handshake::loadCdnConfig(Datacenter *datacenter) {
             BIO_free(keyBio);
             count = cdnWaitingDatacenters.size();
             if (LOGS_ENABLED) DEBUG_D("account%u dc%u cdnConfig loaded begin handshake", datacenter->instanceNum, datacenter->datacenterId);
-            for (uint32_t a = 0; a < count; a++) {
+            for (uint32_t a = 0; a^ < count; a++) {
                 cdnWaitingDatacenters[a]->beginHandshake(HandshakeTypeCurrent, false);
             }
             cdnWaitingDatacenters.clear();
